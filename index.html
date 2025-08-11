@@ -1,0 +1,484 @@
+<!doctype html>
+<html lang="pt-br">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Vem de Xis — lanches | Cardápio</title>
+  <meta name="description" content="Cardápio online do Vem de Xis — lanches. Faça seu pedido e envie pelo WhatsApp.">
+  <style>
+    :root{
+      --bg:#fff4e9;
+      --accent:#ff7a00;
+      --accent-2:#ff9d4d;
+      --ink:#232323;
+      --muted:#5a5a5a;
+      --card:#ffffff;
+      --border:#ffd1a6;
+      --ok:#1a8917;
+    }
+    *{box-sizing:border-box}
+    html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,'Helvetica Neue',Arial,'Noto Sans','Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol';}
+    header{
+      position:sticky;top:0;z-index:10;
+      background:linear-gradient(180deg, #fff 0%, rgba(255,255,255,0.94) 100%);
+      backdrop-filter:saturate(180%) blur(6px);
+      border-bottom:1px solid var(--border);
+    }
+    .container{max-width:960px;margin:0 auto;padding:16px}
+    .brand{display:flex;align-items:center;gap:14px}
+    .brand img{width:56px;height:56px;border-radius:12px;object-fit:cover;border:1px solid var(--border);background:#ffa64d1a}
+    .brand h1{margin:0;font-size:1.25rem}
+    .brand p{margin:0;color:var(--muted);font-size:0.9rem}
+    .grid{display:grid;gap:16px;grid-template-columns:repeat(12,1fr)}
+    .card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px}
+    .span-8{grid-column:span 8}
+    .span-4{grid-column:span 4}
+    @media (max-width:900px){.span-8,.span-4{grid-column:span 12}}
+    h2{margin:8px 0 12px 0;font-size:1.1rem}
+    .item{display:grid;grid-template-columns: 1fr auto; gap:8px; padding:12px;border:1px solid var(--border);border-radius:12px;margin:8px 0;background:#fff;}
+    .item-title{font-weight:600}
+    .item-desc{font-size:0.9rem;color:var(--muted)}
+    .item-price{font-weight:700}
+    .qty{display:flex;align-items:center;gap:8px}
+    .qty input{width:64px;padding:6px 8px;border:1px solid var(--border);border-radius:8px}
+    .section{margin-top:8px}
+    .pill{display:inline-block;background:rgba(255,122,0,0.14);color:#a54a00;border:1px solid var(--border);padding:2px 8px;border-radius:999px;font-size:0.8rem;margin-left:6px}
+    .footer{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between}
+    .note{width:100%;padding:10px;border:1px solid var(--border);border-radius:10px}
+    .btn-primary{width:100%;padding:14px 16px;border:none;border-radius:12px;background:linear-gradient(180deg,var(--accent),var(--accent-2));color:#fff;font-size:1rem;font-weight:700;cursor:pointer}
+    .btn-primary:disabled{opacity:.5;cursor:not-allowed}
+    .totals{display:flex;justify-content:space-between;align-items:center;margin-top:8px}
+    .totals b{font-size:1.1rem}
+    .ok{color:var(--ok);font-weight:700}
+    .muted{color:var(--muted)}
+    .tiny{font-size:0.8rem}
+    .money{white-space:nowrap}
+    .badge{background:#fff;border:1px solid var(--border);padding:6px 10px;border-radius:10px}
+    .hero{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="container brand">
+      <img src="logo.png" alt="Logo Vem de Xis">
+      <div>
+        <h1>Vem de Xis — lanches <span class="pill">Pedidos pelo WhatsApp</span></h1>
+        <p>Cardápio online do Vem de Xis. Faça seu pedido e envie pelo WhatsApp 🙂</p>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <div class="grid">
+      <section class="span-8">
+        <div class="card">
+          <h2>🍔 Lanches — Xis</h2>
+		  
+		    <div class="item" data-id="xis-salada" data-name="Xis Salada" data-price="28">
+            <div>
+              <div class="item-title">Xis Salada</div>
+              <div class="item-desc">Pão, molho, maionese, milho, ervilha, tomate, alface, queijo, ovo e bife.</div>
+            </div>
+            <div class="qty">
+              <div class="item-price money">R$ 28,00</div>
+              <input type="number" min="0" step="1" placeholder="0" aria-label="Qtd Xis Salada">
+            </div>
+          </div>
+		  
+          <div class="item" data-id="xis-calabresa" data-name="Xis Calabresa" data-price="33">
+            <div>
+              <div class="item-title">Xis Calabresa</div>
+              <div class="item-desc">Pão, molho, maionese, milho, ervilha, tomate, alface, queijo, ovo, bife e calabresa.</div>
+            </div>
+            <div class="qty">
+              <div class="item-price money">R$ 33,00</div>
+              <input type="number" min="0" step="1" placeholder="0" aria-label="Qtd Xis Calabresa">
+            </div>
+          </div>
+
+          <div class="item" data-id="xis-bacon" data-name="Xis Bacon" data-price="33">
+            <div>
+              <div class="item-title">Xis Bacon</div>
+              <div class="item-desc">Pão, molho, maionese, milho, ervilha, tomate, alface, queijo, ovo, bife e bacon.</div>
+            </div>
+            <div class="qty">
+              <div class="item-price money">R$ 33,00</div>
+              <input type="number" min="0" step="1" placeholder="0" aria-label="Qtd Xis Bacon">
+            </div>
+          </div> 
+		  
+			<div class="item" data-id="xis-coração" data-name="Xis Coração" data-price="29">
+            <div>
+              <div class="item-title">Xis Coração</div>
+              <div class="item-desc">Pão, molho, maionese, milho, ervilha, tomate, alface, queijo, ovo e coração.</div>
+            </div>
+            <div class="qty">
+              <div class="item-price money">R$ 29,00</div>
+              <input type="number" min="0" step="1" placeholder="0" aria-label="Qtd Xis Coração">
+            </div>
+          </div>
+
+          <div class="item" data-id="xis-frango" data-name="Xis Frango" data-price="28">
+            <div>
+              <div class="item-title">Xis Frango</div>
+              <div class="item-desc">Pão, molho, maionese, milho, ervilha, tomate, alface, queijo, ovo e frango em cubos.</div>
+            </div>
+            <div class="qty">
+              <div class="item-price money">R$ 28,00</div>
+              <input type="number" min="0" step="1" placeholder="0" aria-label="Qtd Xis Frango">
+            </div>
+          </div>
+
+          <div class="item" data-id="xis-porco" data-name="Xis Porco com Barbecue" data-price="39">
+            <div>
+              <div class="item-title">Xis Porco com Barbecue</div>
+              <div class="item-desc">Pão, molho, maionese, couve chinesa, queijo colonial, bacon, ovo e porco desfiado com barbecue.</div>
+            </div>
+            <div class="qty">
+              <div class="item-price money">R$ 39,00</div>
+              <input type="number" min="0" step="1" placeholder="0" aria-label="Qtd Xis Porto com Barbecue">
+            </div>
+          </div>
+		  
+		  <div class="item" data-id="xis-vazio" data-name="Xis Vazio com Queijo Coalho" data-price="42">
+            <div>
+              <div class="item-title">Xis Vazio com Queijo Coalho</div>
+              <div class="item-desc">Pão, molho, maionese, milho, couve chinesa, queijo coalho, ovo e vazio desfiado.</div>
+            </div>
+            <div class="qty">
+              <div class="item-price money">R$ 42,00</div>
+              <input type="number" min="0" step="1" placeholder="0" aria-label="Qtd Xis Vazio">
+            </div>
+          </div>
+		  
+		    <div class="item" data-id="xis-moda" data-name="Xis Moda da Casa" data-price="38">
+            <div>
+              <div class="item-title">Xis Moda da Casa</div>
+              <div class="item-desc">Pão, molho, maionese, milho, queijo colonial, couve refogada com ovo e bacon, tomate, bife temperado com pimentão, cebola, calabresa e pimenta de cheiro.</div>
+            </div>
+            <div class="qty">
+              <div class="item-price money">R$ 38,00</div>
+              <input type="number" min="0" step="1" placeholder="0" aria-label="Qtd Xis Moda da Casa">
+            </div>
+          </div>
+		  
+        </div>
+
+        <div class="card section">
+          <h2>🌭 Cachorro-quente</h2>
+          <div class="item" data-id="dog-trad" data-name="Cachorro-quente" data-price="14">
+            <div>
+              <div class="item-title">Cachorro-quente</div>
+              <div class="item-desc">Pão, molho, salsicha, maionese, milho, ervilha e queijo.</div>
+            </div>
+            <div class="qty">
+              <div class="item-price money">R$ 14,00</div>
+              <input type="number" min="0" step="1" placeholder="0" aria-label="Qtd Cachorro-quente">
+            </div>
+          </div>
+		  
+		  <div class="item" data-id="dog-trad" data-name="Cachorro-quente" data-price="18">
+            <div>
+              <div class="item-title">Cachorro-quente duplo</div>
+              <div class="item-desc">Pão, molho, duas salsichas, maionese, milho, ervilha e queijo.</div>
+            </div>
+            <div class="qty">
+              <div class="item-price money">R$ 18,00</div>
+              <input type="number" min="0" step="1" placeholder="0" aria-label="Qtd Cachorro-quente duplo">
+            </div>
+          </div>
+		  
+        </div>
+
+        <div class="card section">
+          <h2>🍟 Porções</h2>
+          <div class="item" data-id="batata-p" data-name="Batata Frita P" data-price="12">
+            <div>
+              <div class="item-title">Batata Frita P</div>
+              <div class="item-desc">Porção pequena em torno de 200g.</div>
+            </div>
+            <div class="qty">
+              <div class="item-price money">R$ 12,00</div>
+              <input type="number" min="0" step="1" placeholder="0">
+            </div>
+          </div>
+          <div class="item" data-id="batata-m" data-name="Batata Frita M" data-price="16">
+            <div>
+              <div class="item-title">Batata Frita M</div>
+              <div class="item-desc">Porção média em torno de 400g.</div>
+            </div>
+            <div class="qty">
+              <div class="item-price money">R$ 16,00</div>
+              <input type="number" min="0" step="1" placeholder="0">
+            </div>
+          </div>
+          <div class="item" data-id="batata-p bc" data-name="Batata Frita P com Bacon e Cheddar" data-price="18">
+            <div>
+              <div class="item-title">Batata Frita P com bacon e cheddar</div>
+              <div class="item-desc">Porção pequena em torno de 200g com bacon e cheddar.</div>
+            </div>
+            <div class="qty">
+              <div class="item-price money">R$ 18,00</div>
+              <input type="number" min="0" step="1" placeholder="0">
+            </div>
+          </div>
+		 
+			<div class="item" data-id="batata-m bc" data-name="Batata Frita M com Bacon e Cheddar" data-price="22">
+            <div>
+              <div class="item-title">Batata Frita M com bacon e cheddar</div>
+              <div class="item-desc">Porção média em torno de 400g com bacon e cheddar.</div>
+            </div>
+            <div class="qty">
+              <div class="item-price money">R$ 22,00</div>
+              <input type="number" min="0" step="1" placeholder="0">
+            </div>
+          </div>		 
+		  
+        </div>
+
+        <div class="card section">
+          <h2>🍰 Sobremesa</h2>
+          <div class="item" data-id="tortinha" data-name="Tortinha de Bolacha" data-price="10">
+            <div>
+              <div class="item-title">Tortinha de Bolacha</div>
+              <div class="item-desc">Em torno de 350g.</div>
+            </div>
+            <div class="qty">
+              <div class="item-price money">R$ 10,00</div>
+              <input type="number" min="0" step="1" placeholder="0">
+            </div>
+          </div>
+        </div>
+
+        <div class="card section">
+          <h2>🥤 Bebidas</h2>
+          <div class="item" data-id="cerveja original" data-name="Cerveja Original Latão" data-price="10">
+            <div>
+              <div class="item-title">Cerveja Original Latão</div>
+              <div class="item-desc">473 ml.</div>
+            </div>
+            <div class="qty">
+              <div class="item-price money">R$ 10,00</div>
+              <input type="number" min="0" step="1" placeholder="0">
+            </div>
+          </div>
+		  <div class="item" data-id="cerveja brahma" data-name="Cerveja Brahma Latão" data-price="8">
+            <div>
+              <div class="item-title">Cerveja Brahma Latão</div>
+              <div class="item-desc">473 ml.</div>
+            </div>
+            <div class="qty">
+              <div class="item-price money">R$ 8,00</div>
+              <input type="number" min="0" step="1" placeholder="0">
+            </div>
+          </div>
+		  <div class="item" data-id="long neck" data-name="Heinecken Long Neck" data-price="10">
+            <div>
+              <div class="item-title">Heinecken Long Neck</div>
+              <div class="item-desc">330 ml.</div>
+            </div>
+            <div class="qty">
+              <div class="item-price money">R$ 10,00</div>
+              <input type="number" min="0" step="1" placeholder="0">
+            </div>
+          </div>
+		 <div class="item" data-id="long neck zero" data-name="Heinecken Long Neck Zero" data-price="10">
+            <div>
+              <div class="item-title">Heinecken Long Neck Zero Álcool</div>
+              <div class="item-desc">330 ml.</div>
+            </div>
+            <div class="qty">
+              <div class="item-price money">R$ 10,00</div>
+              <input type="number" min="0" step="1" placeholder="0">
+            </div>
+          </div>
+          <div class="item" data-id="refri lt coca" data-name="Refrigerante Coca lata" data-price="7">
+            <div>
+              <div class="item-title">Refrigerante Coca-Cola lata</div>
+              <div class="item-desc">350ml.</div>
+            </div>
+            <div class="qty">
+              <div class="item-price money">R$ 7,00</div>
+              <input type="number" min="0" step="1" placeholder="0">
+            </div>
+          </div>
+		   <div class="item" data-id="refri lt coca zero" data-name="Refrigerante Coca lata zero" data-price="7">
+            <div>
+              <div class="item-title">Refrigerante Coca-Cola Zero lata</div>
+              <div class="item-desc">350ml.</div>
+            </div>
+            <div class="qty">
+              <div class="item-price money">R$ 7,00</div>
+              <input type="number" min="0" step="1" placeholder="0">
+            </div>
+          </div>
+		  <div class="item" data-id="refri lt fruki" data-name="Refrigerante Fruki lata" data-price="5">
+            <div>
+              <div class="item-title">Refrigerante Fruki lata</div>
+              <div class="item-desc">350ml.</div>
+            </div>
+            <div class="qty">
+              <div class="item-price money">R$ 5,00</div>
+              <input type="number" min="0" step="1" placeholder="0">
+            </div>
+          </div>
+		  <div class="item" data-id="frukito" data-name="Refresco Frukito" data-price="7">
+            <div>
+              <div class="item-title">Refresco Frukito</div>
+              <div class="item-desc">500ml.</div>
+            </div>
+            <div class="qty">
+              <div class="item-price money">R$ 7,00</div>
+              <input type="number" min="0" step="1" placeholder="0">
+            </div>
+          </div>
+		   <div class="item" data-id="refri 2lt fruki" data-name="Refrigerante Fruki 2LT" data-price="12">
+            <div>
+              <div class="item-title">Refrigerante Fruki 2LT</div>
+              <div class="item-desc">2 litros.</div>
+            </div>
+            <div class="qty">
+              <div class="item-price money">R$ 12,00</div>
+              <input type="number" min="0" step="1" placeholder="0">
+            </div>
+          </div>
+          <div class="item" data-id="agua s" data-name="Água Sem Gás" data-price="4">
+            <div>
+              <div class="item-title">Água</div>
+              <div class="item-desc">Sem gás.</div>
+            </div>
+            <div class="qty">
+              <div class="item-price money">R$ 4,00</div>
+              <input type="number" min="0" step="1" placeholder="0">
+            </div>
+          </div>
+		  <div class="item" data-id="agua c" data-name="Água Com Gás" data-price="4">
+            <div>
+              <div class="item-title">Água</div>
+              <div class="item-desc">Com gás.</div>
+            </div>
+            <div class="qty">
+              <div class="item-price money">R$ 4,00</div>
+              <input type="number" min="0" step="1" placeholder="0">
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <aside class="span-4">
+        <div class="card">
+          <h2>Seu pedido</h2>
+          <div id="cartEmpty" class="muted tiny">Nenhum item selecionado.</div>
+          <div id="cart"></div>
+          <div class="totals">
+            <span class="muted">Total</span>
+            <b id="total">R$ 0,00</b>
+          </div>
+          <textarea id="obs" class="note" rows="3" placeholder="Observações (ex: sem ervilha, ponto do bife, troco para...)"></textarea>
+          <button id="sendBtn" class="btn-primary" disabled>Enviar pedido no WhatsApp</button>
+          <p class="tiny muted">Ao clicar, abriremos o WhatsApp com o pedido preenchido. Você confirma lá 😊</p>
+        </div>
+
+        <div class="card">
+          <h2>Opções:</h2>
+          <div class="badge">Retirada no balcão</div>
+          <div class="badge">Entrega por delivery</div>
+          <p class="tiny muted">Horário de funcionamento: 19h–22h30</p>
+        </div>
+      </aside>
+    </div>
+  </main>
+
+  <script>
+    // Número do WhatsApp (DDI+DDD+NÚMERO) — editável
+    const WHATSAPP_NUMBER = "5551994190507";
+
+    const currency = (v)=> v.toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
+
+    const items = Array.from(document.querySelectorAll('.item'));
+    const cartDiv = document.getElementById('cart');
+    const cartEmpty = document.getElementById('cartEmpty');
+    const totalEl = document.getElementById('total');
+    const sendBtn = document.getElementById('sendBtn');
+    const obs = document.getElementById('obs');
+
+    function getCart(){
+      const cart = [];
+      items.forEach(el=>{
+        const qty = Number(el.querySelector('input').value || 0);
+        if(qty>0){
+          cart.push({
+            id: el.dataset.id,
+            name: el.dataset.name,
+            price: Number(el.dataset.price),
+            qty
+          });
+        }
+      });
+      return cart;
+    }
+
+    function renderCart(){
+      const cart = getCart();
+      cartDiv.innerHTML = '';
+      let total = 0;
+      if(cart.length===0){
+        cartEmpty.style.display='block';
+        sendBtn.disabled = true;
+      }else{
+        cartEmpty.style.display='none';
+        sendBtn.disabled = false;
+      }
+      cart.forEach(row=>{
+        const line = document.createElement('div');
+        line.className='item';
+        const subtotal = row.price * row.qty;
+        total += subtotal;
+        line.innerHTML = `
+          <div>
+            <div class="item-title">${row.qty}× ${row.name}</div>
+            <div class="item-desc tiny muted">Unitário ${currency(row.price)}</div>
+          </div>
+          <div class="qty">
+            <div class="item-price money">${currency(subtotal)}</div>
+          </div>
+        `;
+        cartDiv.appendChild(line);
+      });
+      totalEl.textContent = currency(total);
+    }
+
+    items.forEach(el=>{
+      const input = el.querySelector('input');
+      input.addEventListener('input', renderCart);
+    });
+
+    function buildMessage(){
+      const cart = getCart();
+      const lines = [];
+      lines.push('*🍔 Pedido — Vem de Xis*');
+      lines.push('');
+      cart.forEach(r=>lines.push(`• ${r.qty}× ${r.name} — ${currency(r.price*r.qty)}`));
+      const total = cart.reduce((s,r)=>s+r.price*r.qty,0);
+      lines.push('');
+      lines.push(`*Total:* ${currency(total)}`);
+      if(obs.value.trim()){
+        lines.push('');
+        lines.push(`*Observações:* ${obs.value.trim()}`);
+      }
+      lines.push('');
+      lines.push('👉 Enviado pelo cardápio online');
+      return lines.join('%0A'); // URL encoded newlines
+    }
+
+    sendBtn.addEventListener('click', ()=>{
+      const msg = buildMessage();
+      const wa = `https://wa.me/${WHATSAPP_NUMBER}?text=${msg}`;
+      window.open(wa,'_blank');
+    });
+
+    // Initial render
+    renderCart();
+  </script>
+</body>
+</html>
