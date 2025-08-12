@@ -104,14 +104,61 @@
   .btn-primary{padding:12px 14px;border-radius:10px}
 }
 
+
+/* ===== MOBILE: título em cima, controles embaixo ===== */
+@media (max-width: 520px){
+  .item{
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto;
+    gap: 8px;
+    align-items: start;
+  }
+  .item > div:first-child{
+    grid-row: 1;
+  }
+  .item .qty{
+    grid-row: 2;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 6px;
+    border-top: 1px dashed var(--border);
+  }
+  .item-title{
+    font-size: 1rem;
+    line-height: 1.2;
+    margin-bottom: 4px;
+  }
+  .item-desc{
+    font-size: 0.88rem;
+    line-height: 1.25;
+    color: var(--muted);
+  }
+  .item-price{
+    font-size: 1rem;
+    font-weight: bold;
+  }
+  .btn-qty{
+    width: 34px;
+    height: 34px;
+    border-radius: 8px;
+    font-size: 18px;
+  }
+  .qty input{
+    width: 46px;
+    text-align: center;
+    padding: 4px 6px;
+  }
+}
+
 </style>
 </head>
 <body>
   <header>
     <div class="container brand">
       <div>
-        <h1>Vem de Xis — lanches <span class="pill">Pedidos pelo WhatsApp</span></h1>
-        <p>Cardápio online do Vem de Xis. Faça seu pedido e envie pelo WhatsApp 🙂</p>
+        <h1>Vem de Xis — lanches <span class="pill">Cardápio online</span></h1>
+        <p>Faça seu pedido e envie pelo WhatsApp 🙂</p>
 		<p>Horário de funcionamento: 19h às 22h30. Entregas somente em Arroio do Meio.</p>
       </div>
     </div>
