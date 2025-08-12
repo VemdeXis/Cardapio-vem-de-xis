@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Vem de Xis — lanches | Cardápio</title>
-  <meta name="description" content="Cardápio online do Vem de Xis — lanches. Faça seu pedido e envie pelo WhatsApp.">
+  <meta name="description" content="Cardápio online do Vem de Xis — lanches. Faça seu pedido e envie pelo WhatsApp. Horário de funcionamento: 19h - 22h30">
   <style>
     :root{
       --bg:#fff4e9;
@@ -55,15 +55,32 @@
     .money{white-space:nowrap}
     .badge{background:#fff;border:1px solid var(--border);padding:6px 10px;border-radius:10px}
     .hero{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
-  </style>
+  
+/* --- melhorias de UX --- */
+.btn-qty{
+  width:36px;height:36px;border:1px solid var(--border);
+  border-radius:10px;background:#fff;font-size:20px;font-weight:700;
+  line-height:1;display:grid;place-items:center;cursor:pointer
+}
+.qty{gap:6px}
+.qty input{width:56px;text-align:center}
+.subcard{border:1px solid var(--border);border-radius:12px;padding:12px;background:#fff;margin:8px 0 12px 0}
+.subcard h3{margin:0 0 8px 0;font-size:1rem}
+.subcard label{display:block;margin:6px 0}
+.subcard .row{display:flex;gap:8px;flex-wrap:wrap}
+.subcard .col{flex:1;min-width:120px}
+.subcard input[type="text"], .subcard input[type="number"]{width:100%;padding:8px;border:1px solid var(--border);border-radius:8px}
+.addr{display:none}
+
+</style>
 </head>
 <body>
   <header>
     <div class="container brand">
-      <img src="logo.png" alt="Logo Vem de Xis">
       <div>
         <h1>Vem de Xis — lanches <span class="pill">Pedidos pelo WhatsApp</span></h1>
         <p>Cardápio online do Vem de Xis. Faça seu pedido e envie pelo WhatsApp 🙂</p>
+		<p>Horário de funcionamento: 19h às 22h30. Entregas somente em Arroio do Meio.</p>
       </div>
     </div>
   </header>
@@ -370,21 +387,42 @@
           <h2>Seu pedido</h2>
           <div id="cartEmpty" class="muted tiny">Nenhum item selecionado.</div>
           <div id="cart"></div>
-          <div class="totals">
+          
+<div class="subcard" id="deliveryBox">
+  <h3>📦 Como você quer receber?</h3>
+  <label><input type="radio" name="saida" value="retirada" checked> Retirada no balcão <span class="tiny muted">(~25 min)</span></label>
+  <label><input type="radio" name="saida" value="delivery"> Entrega por delivery <span class="tiny muted">(~30–50 min)</span></label>
+  <div class="addr" id="addr">
+    <div class="row">
+      <div class="col"><input id="rua" placeholder="Rua" type="text"></div>
+      <div class="col" style="max-width:140px"><input id="numero" placeholder="Número" type="text"></div>
+      <div class="col"><input id="bairro" placeholder="Bairro" type="text"></div>
+    </div>
+    <div class="tiny muted" style="margin-top:6px">Entregas somente em Arroio do Meio.</div>
+  </div>
+</div>
+
+<div class="subcard" id="paymentBlock">
+  <h3>💳 Como você quer pagar?</h3>
+  <label><input type="radio" name="payment" value="Dinheiro"> Dinheiro</label>
+  <div id="trocoWrap" style="display:none; margin-left:24px">
+    <label class="tiny muted" for="trocoValue">Troco para quanto?</label>
+    <input type="number" id="trocoValue" placeholder="Ex: 50, 100">
+  </div>
+  <label><input type="radio" name="payment" value="Cartão"> Cartão</label>
+  <label><input type="radio" name="payment" value="PIX" checked> PIX</label>
+</div>
+
+<div class="totals">
             <span class="muted">Total</span>
             <b id="total">R$ 0,00</b>
           </div>
-          <textarea id="obs" class="note" rows="3" placeholder="Observações (ex: sem ervilha, ponto do bife, troco para...)"></textarea>
+          <textarea id="obs" class="note" rows="3" placeholder="Observações (ex: sem ervilha, sem milho..)"></textarea>
           <button id="sendBtn" class="btn-primary" disabled>Enviar pedido no WhatsApp</button>
           <p class="tiny muted">Ao clicar, abriremos o WhatsApp com o pedido preenchido. Você confirma lá 😊</p>
         </div>
 
-        <div class="card">
-          <h2>Opções:</h2>
-          <div class="badge">Retirada no balcão</div>
-          <div class="badge">Entrega por delivery</div>
-          <p class="tiny muted">Horário de funcionamento: 19h–22h30</p>
-        </div>
+      
       </aside>
     </div>
   </main>
@@ -479,6 +517,125 @@
 
     // Initial render
     renderCart();
-  </script>
+  
+// ===== Botões +/- para quantidade =====
+function enhanceQty(){
+  items.forEach(el=>{
+    const qtyBox = el.querySelector('.qty');
+    const input  = el.querySelector('input[type="number"]');
+    if(!qtyBox || !input) return;
+    input.readOnly = true;
+    if (input.value === "") input.value = 0;
+    if(qtyBox.querySelector('.btn-qty')) return; // evita duplicar
+
+    const dec = document.createElement('button');
+    dec.type = 'button';
+    dec.className = 'btn-qty';
+    dec.textContent = '−';
+
+    const inc = document.createElement('button');
+    inc.type = 'button';
+    inc.className = 'btn-qty';
+    inc.textContent = '+';
+
+    qtyBox.insertBefore(dec, input);
+    qtyBox.appendChild(inc);
+
+    dec.addEventListener('click', ()=>{
+      const v = Math.max(0, Number(input.value||0) - 1);
+      input.value = v;
+      renderCart();
+    });
+    inc.addEventListener('click', ()=>{
+      const v = Number(input.value||0) + 1;
+      input.value = v;
+      renderCart();
+    });
+  });
+}
+
+// ===== Retirada / Delivery =====
+const saidaRadios = document.querySelectorAll('input[name="saida"]');
+const addrBox = document.getElementById('addr');
+const rua = document.getElementById('rua');
+const numero = document.getElementById('numero');
+const bairro = document.getElementById('bairro');
+
+function selectedSaida(){
+  const r = Array.from(saidaRadios).find(x=>x.checked);
+  return r ? r.value : 'retirada';
+}
+function updateDeliveryUI(){
+  const sel = selectedSaida();
+  addrBox.style.display = sel==='delivery' ? 'block' : 'none';
+}
+
+// ===== Pagamento =====
+const paymentRadios = document.querySelectorAll('input[name="payment"]');
+const trocoWrap = document.getElementById('trocoWrap');
+const trocoValue = document.getElementById('trocoValue');
+function updatePaymentUI(){
+  const sel = Array.from(paymentRadios).find(x=>x.checked);
+  if(sel && sel.value==='Dinheiro'){
+    trocoWrap.style.display='block';
+  }else{
+    trocoWrap.style.display='none';
+    if(trocoValue) trocoValue.value='';
+  }
+}
+
+// ===== Habilitar envio =====
+function updateSendState(){
+  const hasItems = getCart().length>0;
+  let ok = hasItems;
+  if(selectedSaida()==='delivery'){
+    ok = ok && rua && numero && bairro && rua.value.trim() && numero.value.trim() && bairro.value.trim();
+  }
+  sendBtn.disabled = !ok;
+}
+
+// ===== Estender mensagem do WhatsApp =====
+(function(){
+  const originalBuildMessage = buildMessage;
+  window.buildMessage = function(){
+    const msgBase = originalBuildMessage();
+    const lines = [];
+
+    // Saída
+    const s = selectedSaida();
+    if(s==='retirada'){
+      lines.push('%0A*Retirada no balcão* (~25 min)');
+    }else{
+      lines.push('%0A*Entrega por delivery* (~30–50 min)');
+      lines.push(`%0AEndereço: ${encodeURIComponent(rua.value)}, ${encodeURIComponent(numero.value)} — ${encodeURIComponent(bairro.value)}`);
+      lines.push('%0A(Entregas somente em Arroio do Meio)');
+    }
+
+    // Pagamento
+    const pay = Array.from(paymentRadios).find(x=>x.checked);
+    if(pay){
+      lines.push(`%0A*Pagamento:* ${encodeURIComponent(pay.value)}`);
+      if(pay.value==='Dinheiro' && trocoValue && trocoValue.value.trim()){
+        lines.push(`%0A*Troco para:* R$ ${encodeURIComponent(trocoValue.value.trim())}`);
+      }
+    }
+    return msgBase + lines.join('');
+  };
+})();
+
+// Eventos
+document.addEventListener('DOMContentLoaded', ()=>{
+  enhanceQty();
+  saidaRadios.forEach(r=>r.addEventListener('change', ()=>{updateDeliveryUI(); updateSendState();}));
+  if(rua) rua.addEventListener('input', updateSendState);
+  if(numero) numero.addEventListener('input', updateSendState);
+  if(bairro) bairro.addEventListener('input', updateSendState);
+  paymentRadios.forEach(r=>r.addEventListener('change', ()=>{updatePaymentUI();}));
+  updateDeliveryUI();
+  updatePaymentUI();
+  updateSendState();
+});
+
+</script>
 </body>
 </html>
