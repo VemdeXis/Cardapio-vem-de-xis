@@ -151,6 +151,68 @@
   }
 }
 
+
+
+/* === Ajuste do select de Bairro para mesma largura dos inputs e responsivo === */
+.card select#bairro {
+  width: 100%;
+  max-width: 100%;
+  display: block;
+  padding: 10px 12px;
+  border: 1px solid var(--line, #eee3);
+  border-radius: 12px;
+  font: inherit;
+  background: #fff;
+  box-sizing: border-box;
+  height: 40px;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+}
+/* Garante que o container da coluna não estoure no mobile */
+.row .col select#bairro {
+  width: 100%;
+  max-width: 100%;
+}
+
+
+/* Uniformiza o contorno do select com os inputs */
+.card input[type="text"],
+.card input[type="number"],
+.card select#bairro {
+  border: 1px solid var(--line, #ccc);
+  border-radius: 12px;
+  outline: none;
+}
+.card input[type="text"]:focus,
+.card input[type="number"]:focus,
+.card select#bairro:focus {
+  border-color: #ff9900; /* cor de destaque igual já usada nos inputs */
+  box-shadow: 0 0 0 2px rgba(255,153,0,0.25);
+}
+
+
+/* === Uniformiza o select com os inputs === */
+.card select#bairro {
+  width: 100%;
+  max-width: 100%;
+  display: block;
+  padding: 10px 12px;
+  border: 1px solid #e5e5e5; /* mesmo tom dos inputs */
+  border-radius: 12px;
+  font: inherit;
+  background: #fff;
+  box-sizing: border-box;
+  height: 40px;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+}
+.card select#bairro:focus {
+  border-color: #ff9900; /* cor de foco igual aos outros campos */
+  box-shadow: 0 0 0 3px rgba(255, 153, 0, 0.2);
+  outline: none;
+}
 </style>
 </head>
 <body>
@@ -581,7 +643,11 @@
     <div class="row">
       <div class="col"><input id="rua" placeholder="Rua" type="text"></div>
       <div class="col" style="max-width:140px"><input id="numero" placeholder="Número" type="text"></div>
-      <div class="col"><input id="bairro" placeholder="Bairro" type="text"></div>
+      <div class="col">
+  <select id="bairro" aria-label="Bairro">
+    <option value="">Selecione o bairro</option>
+  </select>
+</div>
     </div>
     <div class="tiny muted" style="margin-top:6px">Entregas somente em Arroio do Meio.</div>
   </div>
@@ -599,9 +665,17 @@
 </div>
 
 <div class="totals">
-            <span class="muted">Total</span>
-            <b id="total">R$ 0,00</b>
-          </div>
+  <span class="muted">Subtotal</span>
+  <b id="subtotal">R$ 0,00</b>
+</div>
+<div class="totals tiny">
+  <span class="muted">Entrega</span>
+  <b id="deliveryFee">R$ 0,00</b>
+</div>
+<div class="totals">
+  <span class="muted">Total</span>
+  <b id="total">R$ 0,00</b>
+</div>
           <textarea id="obs" class="note" rows="3" placeholder="Observações (ex: sem ervilha, sem milho..)"></textarea>
           <button id="sendBtn" class="btn-primary" disabled>Enviar pedido no WhatsApp</button>
           <p class="tiny muted">Ao clicar, abriremos o WhatsApp com o pedido preenchido. Você confirma lá 😊</p>
@@ -613,214 +687,294 @@
   </main>
 
   <script>
-    // Número do WhatsApp (DDI+DDD+NÚMERO) — editável
-    const WHATSAPP_NUMBER = "5551994190507";
+  // Número do WhatsApp (DDI+DDD+NÚMERO) — editável
+  const WHATSAPP_NUMBER = "5551994190507";
 
-    const currency = (v)=> v.toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
+  // Formata BRL
+  const currency = (v)=> v.toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
 
-    const items = Array.from(document.querySelectorAll('.item'));
-    const cartDiv = document.getElementById('cart');
-    const cartEmpty = document.getElementById('cartEmpty');
-    const totalEl = document.getElementById('total');
-    const sendBtn = document.getElementById('sendBtn');
-    const obs = document.getElementById('obs');
+  // ===== Itens / carrinho =====
+  const items     = Array.from(document.querySelectorAll('.item'));
+  const cartDiv   = document.getElementById('cart');
+  const cartEmpty = document.getElementById('cartEmpty');
 
-    function getCart(){
-      const cart = [];
-      items.forEach(el=>{
-        const qty = Number(el.querySelector('input').value || 0);
-        if(qty>0){
-          cart.push({
-            id: el.dataset.id,
-            name: el.dataset.name,
-            price: Number(el.dataset.price),
-            qty
-          });
-        }
-      });
-      return cart;
-    }
+  // ===== TOTAIS (subtotal / entrega / total) =====
+  const subtotalEl    = document.getElementById('subtotal');
+  const deliveryFeeEl = document.getElementById('deliveryFee');
+  const totalEl       = document.getElementById('total');
 
-    function renderCart(){
-      const cart = getCart();
-      cartDiv.innerHTML = '';
-      let total = 0;
-      if(cart.length===0){
-        cartEmpty.style.display='block';
-        sendBtn.disabled = true;
-      }else{
-        cartEmpty.style.display='none';
-        sendBtn.disabled = false;
-      }
-      cart.forEach(row=>{
-        const line = document.createElement('div');
-        line.className='item';
-        const subtotal = row.price * row.qty;
-        total += subtotal;
-        line.innerHTML = `
-          <div>
-            <div class="item-title">${row.qty}× ${row.name}</div>
-            <div class="item-desc tiny muted">Unitário ${currency(row.price)}</div>
-          </div>
-          <div class="qty">
-            <div class="item-price money">${currency(subtotal)}</div>
-          </div>
-        `;
-        cartDiv.appendChild(line);
-      });
-      totalEl.textContent = currency(total);
-    }
+  const sendBtn = document.getElementById('sendBtn');
+  const obs     = document.getElementById('obs');
 
-    items.forEach(el=>{
-      const input = el.querySelector('input');
-      input.addEventListener('input', renderCart);
-    });
+  // ===== Retirada / Delivery =====
+  const saidaRadios = document.querySelectorAll('input[name="saida"]');
+  const addrBox     = document.getElementById('addr');
+  const rua         = document.getElementById('rua');
+  const numero      = document.getElementById('numero');
+  const bairro      = document.getElementById('bairro'); // agora é <select>
 
-    function buildMessage(){
-      const cart = getCart();
-      const lines = [];
-      lines.push('*🍔 Pedido — Vem de Xis*');
-      lines.push('');
-      cart.forEach(r=>lines.push(`• ${r.qty}× ${r.name} — ${currency(r.price*r.qty)}`));
-      const total = cart.reduce((s,r)=>s+r.price*r.qty,0);
-      lines.push('');
-      lines.push(`*Total:* ${currency(total)}`);
-      if(obs.value.trim()){
-        lines.push('');
-        lines.push(`*Observações:* ${obs.value.trim()}`);
-      }
-      lines.push('');
-      lines.push('👉 Enviado pelo cardápio online');
-      return lines.join('%0A'); // URL encoded newlines
-    }
-
-    sendBtn.addEventListener('click', ()=>{
-      const msg = buildMessage();
-      const wa = `https://wa.me/${WHATSAPP_NUMBER}?text=${msg}`;
-      window.open(wa,'_blank');
-    });
-
-    // Initial render
-    renderCart();
-  
-// ===== Botões +/- para quantidade =====
-function enhanceQty(){
-  items.forEach(el=>{
-    const qtyBox = el.querySelector('.qty');
-    const input  = el.querySelector('input[type="number"]');
-    if(!qtyBox || !input) return;
-    input.readOnly = true;
-    if (input.value === "") input.value = 0;
-    if(qtyBox.querySelector('.btn-qty')) return; // evita duplicar
-
-    const dec = document.createElement('button');
-    dec.type = 'button';
-    dec.className = 'btn-qty';
-    dec.textContent = '−';
-
-    const inc = document.createElement('button');
-    inc.type = 'button';
-    inc.className = 'btn-qty';
-    inc.textContent = '+';
-
-    qtyBox.insertBefore(dec, input);
-    qtyBox.appendChild(inc);
-
-    dec.addEventListener('click', ()=>{
-      const v = Math.max(0, Number(input.value||0) - 1);
-      input.value = v;
-      renderCart();
-    });
-    inc.addEventListener('click', ()=>{
-      const v = Number(input.value||0) + 1;
-      input.value = v;
-      renderCart();
-    });
-  });
-}
-
-// ===== Retirada / Delivery =====
-const saidaRadios = document.querySelectorAll('input[name="saida"]');
-const addrBox = document.getElementById('addr');
-const rua = document.getElementById('rua');
-const numero = document.getElementById('numero');
-const bairro = document.getElementById('bairro');
-
-function selectedSaida(){
-  const r = Array.from(saidaRadios).find(x=>x.checked);
-  return r ? r.value : 'retirada';
-}
-function updateDeliveryUI(){
-  const sel = selectedSaida();
-  addrBox.style.display = sel==='delivery' ? 'block' : 'none';
-}
-
-// ===== Pagamento =====
-const paymentRadios = document.querySelectorAll('input[name="payment"]');
-const trocoWrap = document.getElementById('trocoWrap');
-const trocoValue = document.getElementById('trocoValue');
-function updatePaymentUI(){
-  const sel = Array.from(paymentRadios).find(x=>x.checked);
-  if(sel && sel.value==='Dinheiro'){
-    trocoWrap.style.display='block';
-  }else{
-    trocoWrap.style.display='none';
-    if(trocoValue) trocoValue.value='';
+  function selectedSaida(){
+    const r = Array.from(saidaRadios).find(x=>x.checked);
+    return r ? r.value : 'retirada';
   }
-}
-
-// ===== Habilitar envio =====
-function updateSendState(){
-  const hasItems = getCart().length>0;
-  let ok = hasItems;
-  if(selectedSaida()==='delivery'){
-    ok = ok && rua && numero && bairro && rua.value.trim() && numero.value.trim() && bairro.value.trim();
+  function updateDeliveryUI(){
+    const sel = selectedSaida();
+    addrBox.style.display = sel==='delivery' ? 'block' : 'none';
   }
-  sendBtn.disabled = !ok;
-}
 
-// ===== Estender mensagem do WhatsApp =====
-(function(){
-  const originalBuildMessage = buildMessage;
-  window.buildMessage = function(){
-    const msgBase = originalBuildMessage();
-    const lines = [];
-
-    // Saída
-    const s = selectedSaida();
-    if(s==='retirada'){
-      lines.push('%0A*Retirada no balcão* (~25 min)');
+  // ===== Pagamento =====
+  const paymentRadios = document.querySelectorAll('input[name="payment"]');
+  const trocoWrap  = document.getElementById('trocoWrap');
+  const trocoValue = document.getElementById('trocoValue');
+  function updatePaymentUI(){
+    const sel = Array.from(paymentRadios).find(x=>x.checked);
+    if(sel && sel.value==='Dinheiro'){
+      trocoWrap.style.display='block';
     }else{
-      lines.push('%0A*Entrega por delivery* (~30–50 min)');
-      lines.push(`%0AEndereço: ${encodeURIComponent(rua.value)}, ${encodeURIComponent(numero.value)} — ${encodeURIComponent(bairro.value)}`);
-      lines.push('%0A(Entregas somente em Arroio do Meio)');
+      trocoWrap.style.display='none';
+      if(trocoValue) trocoValue.value='';
     }
+  }
 
-    // Pagamento
-    const pay = Array.from(paymentRadios).find(x=>x.checked);
-    if(pay){
-      lines.push(`%0A*Pagamento:* ${encodeURIComponent(pay.value)}`);
-      if(pay.value==='Dinheiro' && trocoValue && trocoValue.value.trim()){
-        lines.push(`%0A*Troco para:* R$ ${encodeURIComponent(trocoValue.value.trim())}`);
-      }
-    }
-    return msgBase + lines.join('');
+  // ===== Lista de bairros e taxas (ordenada alfabeticamente) =====
+  const BAIRROS = {
+    "Aimoré": 11.00,
+    "Arroio Grande (após Pesque-Pague)": 25.00,
+    "Arroio Grande (até Pesque-Pague)": 20.00,
+    "Barra da Forqueta": 12.00,
+    "Bela Vista": 10.00,
+    "Centro": 8.00,
+    "Dom Pedro": 11.00,
+    "Dona Rita": 12.00,
+    "Forqueta": 25.00,
+    "Forqueta Baixa": 20.00,
+    "Glória": 11.00,
+    "Linha 32": 25.00,
+    "Medianeira": 12.00,
+    "Morro São José": 20.00,
+    "Navegantes": 8.00,
+    "Novo Horizonte": 12.00,
+    "Palmas": 25.00,
+    "Picada Arroio do Meio": 17.00,
+    "Rua Barbosa (após R. João Antônio Rauber)": 15.00,
+    "Rua Barbosa (até R. João Antônio Rauber)": 12.00,
+    "São Caetano": 12.00,
+    "São José": 10.00
   };
-})();
 
-// Eventos
-document.addEventListener('DOMContentLoaded', ()=>{
-  enhanceQty();
-  saidaRadios.forEach(r=>r.addEventListener('change', ()=>{updateDeliveryUI(); updateSendState();}));
-  if(rua) rua.addEventListener('input', updateSendState);
-  if(numero) numero.addEventListener('input', updateSendState);
-  if(bairro) bairro.addEventListener('input', updateSendState);
-  paymentRadios.forEach(r=>r.addEventListener('change', ()=>{updatePaymentUI();}));
-  updateDeliveryUI();
-  updatePaymentUI();
-  updateSendState();
-});
+  // Preenche o <select id="bairro"> em ordem alfabética
+  function populateBairros(){
+    if(!bairro) return;
+    bairro.innerHTML = '<option value="">Selecione o bairro</option>';
+    Object.keys(BAIRROS)
+      .sort((a,b)=>a.localeCompare(b,'pt-BR',{sensitivity:'base'}))
+      .forEach(nome=>{
+        const opt = document.createElement('option');
+        opt.value = nome;
+        opt.textContent = `${nome} — ${currency(BAIRROS[nome])}`;
+        bairro.appendChild(opt);
+      });
+  }
 
+  // ===== Carrinho =====
+  function getCart(){
+    const cart = [];
+    items.forEach(el=>{
+      const input = el.querySelector('input[type="number"]');
+      const qty   = Number(input ? input.value : 0) || 0;
+      if(qty>0){
+        cart.push({
+          id: el.dataset.id,
+          name: el.dataset.name,
+          price: Number(el.dataset.price),
+          qty
+        });
+      }
+    });
+    return cart;
+  }
+
+  function renderCart(){
+    const cart = getCart();
+    cartDiv.innerHTML = '';
+    let subtotal = 0;
+
+    if(cart.length===0){
+      cartEmpty.style.display='block';
+      sendBtn.disabled = true;
+    }else{
+      cartEmpty.style.display='none';
+      sendBtn.disabled = false;
+    }
+
+    cart.forEach(row=>{
+      const line = document.createElement('div');
+      line.className='item';
+      const linha = row.price * row.qty;
+      subtotal += linha;
+      line.innerHTML = `
+        <div>
+          <div class="item-title">${row.qty}× ${row.name}</div>
+          <div class="item-desc tiny muted">Unitário ${currency(row.price)}</div>
+        </div>
+        <div class="qty">
+          <div class="item-price money">${currency(linha)}</div>
+        </div>
+      `;
+      cartDiv.appendChild(line);
+    });
+
+    // Subtotal
+    if(subtotalEl) subtotalEl.textContent = currency(subtotal);
+
+    // Taxa de entrega (0 se retirada)
+    let taxa = 0;
+    if(selectedSaida()==='delivery'){
+      const nomeBairro = bairro && bairro.value ? bairro.value : '';
+      taxa = BAIRROS[nomeBairro] ? BAIRROS[nomeBairro] : 0;
+    }
+    if(deliveryFeeEl) deliveryFeeEl.textContent = currency(taxa);
+
+    // Total final
+    if(totalEl) totalEl.textContent = currency(subtotal + taxa);
+  }
+
+  // Botões +/- de quantidade
+  function enhanceQty(){
+    items.forEach(el=>{
+      const qtyBox = el.querySelector('.qty');
+      const input  = el.querySelector('input[type="number"]');
+      if(!qtyBox || !input) return;
+      input.readOnly = true;
+      if (input.value === "") input.value = 0;
+      if(qtyBox.querySelector('.btn-qty')) return;
+
+      const dec = document.createElement('button');
+      dec.type = 'button';
+      dec.className = 'btn-qty';
+      dec.textContent = '−';
+
+      const inc = document.createElement('button');
+      inc.type = 'button';
+      inc.className = 'btn-qty';
+      inc.textContent = '+';
+
+      qtyBox.insertBefore(dec, input);
+      qtyBox.appendChild(inc);
+
+      dec.addEventListener('click', ()=>{
+        const v = Math.max(0, Number(input.value||0) - 1);
+        input.value = v;
+        renderCart();
+        updateSendState();
+      });
+      inc.addEventListener('click', ()=>{
+        const v = Number(input.value||0) + 1;
+        input.value = v;
+        renderCart();
+        updateSendState();
+      });
+    });
+  }
+
+  // Habilitar envio (bairro obrigatório em delivery)
+  function updateSendState(){
+    const hasItems = getCart().length>0;
+    let ok = hasItems;
+    if(selectedSaida()==='delivery'){
+      const bairroOk = bairro && bairro.value && BAIRROS[bairro.value] !== undefined;
+      ok = ok && rua && numero && bairroOk && rua.value.trim() && numero.value.trim();
+    }
+    sendBtn.disabled = !ok;
+  }
+
+  // Mensagem do WhatsApp — inclui Subtotal/Entrega/Total
+  function buildMessage(){
+    const cart = getCart();
+    const lines = [];
+    lines.push('*🍔 Pedido — Vem de Xis*');
+    lines.push('');
+    cart.forEach(r=>lines.push(`• ${r.qty}× ${r.name} — ${currency(r.price*r.qty)}`));
+
+    const subtotal = cart.reduce((s,r)=>s+r.price*r.qty,0);
+
+    let taxa = 0;
+    if(selectedSaida()==='delivery'){
+      const nomeBairro = bairro && bairro.value ? bairro.value : '';
+      taxa = BAIRROS[nomeBairro] ? BAIRROS[nomeBairro] : 0;
+    }
+    const total = subtotal + taxa;
+
+    lines.push('');
+    lines.push(`*Subtotal:* ${currency(subtotal)}`);
+    lines.push(`*Entrega:* ${currency(taxa)}`);
+    lines.push(`*Total:* ${currency(total)}`);
+
+    if(obs.value.trim()){
+      lines.push('');
+      lines.push(`*Observações:* ${obs.value.trim()}`);
+    }
+    lines.push('');
+    lines.push('👉 Enviado pelo cardápio online');
+    return lines.join('%0A'); // URL encoded newlines
+  }
+
+  // Extensão da mensagem: saída, endereço, pagamento e troco
+  (function(){
+    const originalBuildMessage = buildMessage; // já retorna com totais
+    window.buildMessage = function(){
+      const msgBase = originalBuildMessage();
+      const lines = [];
+
+      // Saída
+      const s = selectedSaida();
+      if(s==='retirada'){
+        lines.push('%0A*Retirada no balcão* (~25 min)');
+      }else{
+        lines.push('%0A*Entrega por delivery* (~30–50 min)');
+        lines.push(`%0AEndereço: ${encodeURIComponent(rua.value)}, ${encodeURIComponent(numero.value)} — ${encodeURIComponent(bairro.value)}`);
+        lines.push('%0A(Entregas somente em Arroio do Meio)');
+      }
+
+      // Pagamento
+      const pay = Array.from(paymentRadios).find(x=>x.checked);
+      if(pay){
+        lines.push(`%0A*Pagamento:* ${encodeURIComponent(pay.value)}`);
+        if(pay.value==='Dinheiro' && trocoValue && trocoValue.value.trim()){
+          lines.push(`%0A*Troco para:* R$ ${encodeURIComponent(trocoValue.value.trim())}`);
+        }
+      }
+      return msgBase + lines.join('');
+    };
+  })();
+
+  // Clique para enviar
+  sendBtn.addEventListener('click', ()=>{
+    const msg = buildMessage();
+    const wa = `https://wa.me/${WHATSAPP_NUMBER}?text=${msg}`;
+    window.open(wa,'_blank');
+  });
+
+  // Eventos
+  document.addEventListener('DOMContentLoaded', ()=>{
+    populateBairros();                         // popula o <select> com bairros
+    enhanceQty();
+    items.forEach(el=>{
+      const input = el.querySelector('input[type="number"]');
+      if(input) input.addEventListener('input', ()=>{ renderCart(); updateSendState(); });
+    });
+    saidaRadios.forEach(r=>r.addEventListener('change', ()=>{updateDeliveryUI(); renderCart(); updateSendState();}));
+    if(rua)    rua.addEventListener('input', updateSendState);
+    if(numero) numero.addEventListener('input', updateSendState);
+    if(bairro) bairro.addEventListener('change', ()=>{ renderCart(); updateSendState(); });
+
+    paymentRadios.forEach(r=>r.addEventListener('change', ()=>{updatePaymentUI();}));
+
+    updateDeliveryUI();
+    updatePaymentUI();
+    renderCart();       // já calcula Subtotal/Entrega/Total
+    updateSendState();
+  });
 </script>
 </body>
 </html>
