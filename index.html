@@ -702,8 +702,7 @@
   const addrBox     = document.getElementById('addr');
   const rua         = document.getElementById('rua');
   const numero      = document.getElementById('numero');
-  const bairro      = document.getElementById('bairro');
-  const bairro      = document.getElementById('pontoref');// agora é <select>
+  const bairro      = document.getElementById('bairro');// agora é <select>
 
   function selectedSaida(){
     const r = Array.from(saidaRadios).find(x=>x.checked);
@@ -924,7 +923,7 @@
         lines.push('%0A*Retirada no balcão* (~25 min)');
       }else{
         lines.push('%0A*Entrega por delivery* (~30–50 min)');
-        lines.push(`%0AEndereço: ${encodeURIComponent(rua.value)}, ${encodeURIComponent(numero.value)} — ${encodeURIComponent(bairro.value)} — ${encodeURIComponent(pontoref.value)}`);
+        lines.push(`%0AEndereço: ${encodeURIComponent(rua.value)}, ${encodeURIComponent(numero.value)} — ${encodeURIComponent(bairro.value)}`);
         lines.push('%0A(Entregas somente em Arroio do Meio)');
       }
 
